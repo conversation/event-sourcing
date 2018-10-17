@@ -14,6 +14,11 @@ class UpdatedEvent < EventSourcing::Event
     user.name = name
     user
   end
+
+  def dispatch
+    true
+  end
+
 end
 
 RSpec.describe EventSourcing::Event do
@@ -57,7 +62,7 @@ RSpec.describe EventSourcing::Event do
 
     before do
       allow(event).to receive_messages(build_aggregate: true, persist: true)
-      allow(EventSourcing::EventDispatcher).to receive(:dispatch)
+      allow(event).to receive(:dispatch).and_call_original
 
       event.save
     end
@@ -66,12 +71,14 @@ RSpec.describe EventSourcing::Event do
       expect(event).to have_received(:build_aggregate)
     end
 
-    it "calls event dispatcher dispatch" do
-      expect(EventSourcing::EventDispatcher).to have_received(:dispatch).with(event)
     end
 
     it "calls instance's persist" do
       expect(event).to have_received(:persist)
+    end
+
+    it "calls dispatch" do
+      expect(event).to have_received(:dispatch)
     end
   end
 end
