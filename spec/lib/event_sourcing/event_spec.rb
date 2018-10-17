@@ -1,24 +1,26 @@
 require "spec_helper"
 
+class User
+  attr_accessor :name
+end
+
+class CreatedEvent < EventSourcing::Event
+end
+
+class UpdatedEvent < EventSourcing::Event
+  data_attributes :name
+
+  def apply(user)
+    user.name = name
+    user
+  end
+end
+
 RSpec.describe EventSourcing::Event do
-  class User
-    attr_accessor :name
-  end
-
-  class CreatedEvent < EventSourcing::Event
-  end
-
-  class UpdatedEvent < EventSourcing::Event
-    data_attributes :name
-
-    def apply(user)
-      user.name = name
-      user
-    end
-  end
+  let(:instance) { CreatedEvent.new(attributes) }
+  let(:attributes) { {} }
 
   describe ".initialize" do
-    let(:instance) { CreatedEvent.new(attributes) }
     let(:attributes) { { id: 12345, name: "John Doe" } }
 
     it "initializes event's data" do
@@ -32,9 +34,12 @@ RSpec.describe EventSourcing::Event do
 
   describe "#apply" do
     let(:aggregate) { User.new }
-    let(:instance) { CreatedEvent.new }
 
     it { expect { instance.apply(aggregate) }.to raise_error(NotImplementedError) }
+  end
+
+  describe "#persisted?" do
+    it { expect(instance.persisted?).to eq(false) }
   end
 
   describe "#replay" do

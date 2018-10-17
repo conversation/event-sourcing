@@ -3,7 +3,12 @@
 # It defines setters and accessors for the defined `data_attributes`
 # After create, it calls `apply` to apply changes.
 #
-# Subclasses must define the `apply`, `build_aggregate` and `persist` methods
+# Subclasses must define the following methods:
+# - `apply`
+# - `build_aggregate`
+# - `persist`
+# - `persisted?`
+#
 module EventSourcing
   class Event
     attr_reader :data, :metadata
@@ -41,6 +46,11 @@ module EventSourcing
     # Must return the aggregate.
     def apply(_aggregate)
       raise NotImplementedError
+    end
+
+    # @return [TrueClass, FalseClass]
+    def persisted?
+      false
     end
 
     # Replays the event on any given aggregate
