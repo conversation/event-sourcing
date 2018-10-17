@@ -64,7 +64,11 @@ module EventSourcing
     # Persists and dispatches the event
     def save
       build_aggregate
+
+      # Apply and persist
+      self.aggregate = apply(aggregate)
       persist
+
       dispatch
     end
 
