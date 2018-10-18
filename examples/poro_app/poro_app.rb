@@ -1,6 +1,10 @@
-require "event_sourcing"
-
-Dir[File.join(Dir.pwd, "**/*.rb")].each { |file| require file }
+require "models/events/base"
+require "models/user"
+require "models/users/commands/create"
+require "models/users/events/base"
+require "models/users/events/created"
+require "models/users/reactors/send_getting_started_email"
+require "models/event_dispatcher"
 
 class PoroApp
   def self.call
