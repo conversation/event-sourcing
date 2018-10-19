@@ -28,23 +28,29 @@
 #   end
 # ```
 module EventSourcing
-  class Command
-    # Run validations and persist the event.
-    #
-    # On success: returns the event
-    # On noop: returns nil
-    # On failure: raise an ActiveRecord::RecordInvalid error
-    def self.call(args = {})
-      new(args).call
+  module Command
+    def self.included(base)
+      base.extend ClassMethods
     end
 
-    # Define the attributes.
-    # They are set when initializing the command as a hash and
-    # are all accessible as getter methods.
-    #
-    # ex: `attributes :post, :user, :ability`
-    def self.attributes(*args)
-      attr_accessor(*args)
+    module ClassMethods
+      # Run validations and persist the event.
+      #
+      # On success: returns the event
+      # On noop: returns nil
+      # On failure: raise an ActiveRecord::RecordInvalid error
+      def call(args = {})
+        new(args).call
+      end
+
+      # Define the attributes.
+      # They are set when initializing the command as a hash and
+      # are all accessible as getter methods.
+      #
+      # ex: `attributes :post, :user, :ability`
+      def attributes(*args)
+        attr_accessor(*args)
+      end
     end
 
     # @param [Hash<Symbol, Object>] args
@@ -55,7 +61,7 @@ module EventSourcing
 
     def call
       return :noop if event.nil?
-      raise "The event should not be persisted at this stage!" if event.persisted?
+      raise "The event should not be persisted at this stage!" if event.already_persisted?
 
       validate!
       execute!
@@ -77,7 +83,7 @@ module EventSourcing
     # Save the event. Should not be overwritten by the command as side effects
     # should be implemented via Reactors triggering other Events.
     def execute!
-      event.save
+      event.persist_and_dispatch
     end
 
     # Returns a new event record or nil if noop

@@ -1,18 +1,24 @@
 require "spec_helper"
 
-class UserCreatedEvent < EventSourcing::Event
-  def persisted?
+class UserCreatedEvent
+  include EventSourcing::Event
+
+  def already_persisted?
     false
   end
 end
 
-class UserReadEvent < EventSourcing::Event
-  def persisted?
+class UserReadEvent
+  include EventSourcing::Event
+
+  def already_persisted?
     true
   end
 end
 
-class UserCreateCommand < EventSourcing::Command
+class UserCreateCommand
+  include EventSourcing::Command
+
   attributes :id, :name
 
   def after_initialize
@@ -28,13 +34,17 @@ class UserCreateCommand < EventSourcing::Command
   end
 end
 
-class UserUpdatedCommand < EventSourcing::Command
+class UserUpdatedCommand
+  include EventSourcing::Command
+
   def build_event
     nil
   end
 end
 
-class UserReadCommand < EventSourcing::Command
+class UserReadCommand
+  include EventSourcing::Command
+
   def build_event
     UserReadEvent.new
   end
@@ -97,7 +107,7 @@ RSpec.describe EventSourcing::Command do
 
       before do
         allow(instance).to receive(:validate!)
-        allow(instance.event).to receive(:save)
+        allow(instance.event).to receive(:persist_and_dispatch)
       end
 
       it "validates the command" do
@@ -107,7 +117,7 @@ RSpec.describe EventSourcing::Command do
 
       it "executes the command (persists event)" do
         instance.call
-        expect(instance.event).to have_received(:save)
+        expect(instance.event).to have_received(:persist_and_dispatch)
       end
 
       it "returns the command's event" do

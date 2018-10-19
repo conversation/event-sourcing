@@ -5,10 +5,14 @@ class User
   attr_accessor :name
 end
 
-class CreatedEvent < EventSourcing::Event
+class CreatedEvent
+  include EventSourcing::Event
+
 end
 
-class UpdatedEvent < EventSourcing::Event
+class UpdatedEvent
+  include EventSourcing::Event
+
   data_attributes :name
 
   def apply(user)
@@ -24,16 +28,20 @@ class UpdatedEvent < EventSourcing::Event
     true
   end
 
-  def persist
+  def persist_aggregate
+    true
+  end
+
+  def persist_event
     true
   end
 end
 
 RSpec.describe EventSourcing::Event do
-  let(:instance) { CreatedEvent.new(attributes) }
+  let(:instance) { CreatedEvent.assign(attributes) }
   let(:attributes) { {} }
 
-  describe ".initialize" do
+  describe ".assign" do
     let(:attributes) { { id: 12345, name: "John Doe" } }
 
     it "initializes event's data" do
@@ -51,13 +59,13 @@ RSpec.describe EventSourcing::Event do
     it { expect { instance.apply(aggregate) }.to raise_error(NotImplementedError) }
   end
 
-  describe "#persisted?" do
-    it { expect(instance.persisted?).to eq(false) }
+  describe "#already_persisted?" do
+    it { expect(instance.already_persisted?).to eq(false) }
   end
 
   describe "#replay" do
     let(:aggregate) { User.new }
-    let(:event) { UpdatedEvent.new(name: "John Doe") }
+    let(:event) { UpdatedEvent.assign(name: "John Doe") }
 
     it "executes the event on the given aggregate" do
       event.replay(aggregate)
@@ -65,14 +73,15 @@ RSpec.describe EventSourcing::Event do
     end
   end
 
-  describe "#save" do
-    let(:event) { UpdatedEvent.new(name: "Aunt May") }
+  describe "#persist_and_dispatch" do
+    let(:event) { UpdatedEvent.assign(name: "Aunt May") }
 
     before do
-      allow(event).to receive(:persist).and_call_original
+      allow(event).to receive(:persist_aggregate).and_call_original
+      allow(event).to receive(:persist_event).and_call_original
       allow(event).to receive(:dispatch).and_call_original
 
-      event.save
+      event.persist_and_dispatch
     end
 
     it "builds and apply changes to its aggregate" do
@@ -80,8 +89,12 @@ RSpec.describe EventSourcing::Event do
       expect(aggregate.name).to eq("Aunt May")
     end
 
-    it "calls instance's persist" do
-      expect(event).to have_received(:persist)
+    it "calls instance's persist aggregate" do
+      expect(event).to have_received(:persist_aggregate)
+    end
+
+    it "calls instance's persist event" do
+      expect(event).to have_received(:persist_event)
     end
 
     it "calls dispatch" do
