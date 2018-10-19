@@ -1,7 +1,9 @@
 class PoroApp
   module Users
     module Commands
-      class Create < EventSourcing::Command
+      class Create
+        include EventSourcing::Command
+
         attributes :description, :name
 
         def validate!
@@ -14,7 +16,7 @@ class PoroApp
         private
 
         def build_event
-          PoroApp::Users::Events::Created.new(
+          PoroApp::Users::Events::Created.assign(
             active: true,
             description: description,
             name: name,
