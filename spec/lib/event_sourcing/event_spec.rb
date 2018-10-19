@@ -1,4 +1,5 @@
 require "spec_helper"
+require "ostruct"
 
 class User
   attr_accessor :name
@@ -13,6 +14,18 @@ class UpdatedEvent < EventSourcing::Event
   def apply(user)
     user.name = name
     user
+  end
+
+  def build_aggregate
+    self.aggregate ||= OpenStruct.new
+  end
+
+  def dispatch
+    true
+  end
+
+  def persist
+    true
   end
 end
 
@@ -56,22 +69,23 @@ RSpec.describe EventSourcing::Event do
     let(:event) { UpdatedEvent.new(name: "Aunt May") }
 
     before do
-      allow(event).to receive_messages(build_aggregate: true, persist: true)
-      allow(EventSourcing::EventDispatcher).to receive(:dispatch)
+      allow(event).to receive(:persist).and_call_original
+      allow(event).to receive(:dispatch).and_call_original
 
       event.save
     end
 
-    it "calls instance's build aggregate" do
-      expect(event).to have_received(:build_aggregate)
-    end
-
-    it "calls event dispatcher dispatch" do
-      expect(EventSourcing::EventDispatcher).to have_received(:dispatch).with(event)
+    it "builds and apply changes to its aggregate" do
+      aggregate = event.aggregate
+      expect(aggregate.name).to eq("Aunt May")
     end
 
     it "calls instance's persist" do
       expect(event).to have_received(:persist)
+    end
+
+    it "calls dispatch" do
+      expect(event).to have_received(:dispatch)
     end
   end
 end

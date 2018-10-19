@@ -6,6 +6,7 @@
 # Subclasses must define the following methods:
 # - `apply`
 # - `build_aggregate`
+# - `dispatch`
 # - `persist`
 # - `persisted?`
 #
@@ -63,7 +64,11 @@ module EventSourcing
     # Persists and dispatches the event
     def save
       build_aggregate
+
+      # Apply and persist
+      self.aggregate = apply(aggregate)
       persist
+
       dispatch
     end
 
@@ -73,8 +78,11 @@ module EventSourcing
       raise NotImplementedError
     end
 
+    # The base event class should dispatch the dispatcher implementation
+    # Otherwise, event triggers won't be fired
+    # Example: `MyApp::EventDispatcher.dispatch(self)`
     def dispatch
-      EventSourcing::EventDispatcher.dispatch(self)
+      raise NotImplementedError
     end
 
     # Persists the transformation event. Must be implemented.
