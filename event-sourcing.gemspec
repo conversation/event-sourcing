@@ -1,6 +1,8 @@
 lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+
 require "event_sourcing/version"
+require "event_sourcing"
 
 Gem::Specification.new do |spec|
   spec.name = "event-sourcing"
