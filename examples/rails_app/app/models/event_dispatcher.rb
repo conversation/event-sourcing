@@ -1,3 +1,4 @@
 class EventDispatcher < EventSourcing::EventDispatcher
-  # on PoroApp::Users::Events::Created, trigger: PoroApp::Users::Reactors::SendGettingStartedEmail
+  on Users::Events::Created, trigger: [Users::Reactors::SendGettingStartedEmail, Users::Reactors::LogUserChange]
+  on Users::Events::Updated, trigger: Users::Reactors::LogUserChange
 end

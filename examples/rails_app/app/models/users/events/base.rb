@@ -10,9 +10,7 @@ module Users
       belongs_to :user, class_name: "::User", autosave: false
 
       def dispatch
-        puts "------------------"
-        puts "TODO: DISPATCHING"
-        puts "------------------"
+        EventDispatcher.dispatch(self)
       end
     end
   end
