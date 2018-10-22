@@ -13,10 +13,27 @@ module EventSourcing
         end
       end
 
-      # TODO: PROPERLY DOCUMENT THIS
-      # TODO: ActiveRecord getters and setters are TOO POWERFUL! CANNOT REPLACE IT
-      # TODO: So replacing POROs with ActiveRecords
-      # Replaces aggregate getter and setter
+      # An event's aggregate reflects the belonging model of a one-to-many association (an aggregate has many events).
+      # This association should map to an `ActiveRecord.belongs_to` association. The methods below maps the belonging
+      # model getters and setters. Example:
+      #
+      # The base event:
+      #
+      # ```
+      # class Users::Events::Base < ApplicationRecord
+      #   include EventSourcing::Event
+      #   include EventSourcing::Rails::EventRecord
+      #
+      #   belongs_to :user
+      # end
+      # ```
+      #
+      # Will have the following method delegations:
+      # - `Users::Events::Base#user=` -> `Users::Events::Base#aggregate=`
+      # - `Users::Events::Base#user` -> `Users::Events::Base#aggregate`
+      # - `Users::Events::Base#user_id=` -> `Users::Events::Base#aggregate_id=`
+      # - `Users::Events::Base#user_id` -> `Users::Events::Base#aggregate_id`
+      # 
       def aggregate=(object)
         public_send("#{aggregate_name}=", object)
       end
@@ -26,13 +43,15 @@ module EventSourcing
       end
 
       def aggregate_id=(id)
-        public_send "#{aggregate_name}_id=", id
+        public_send("#{aggregate_name}_id=", id)
       end
 
       def aggregate_id
-        public_send "#{aggregate_name}_id"
+        public_send("#{aggregate_name}_id")
       end
 
+      # Replaces `EventSourcing::Event#data` and `EventSourcing::Event#metadata` so it fetches
+      # ActiveRecord's database column. This always returns a hash with `Symbol`s as keys
       def data
         self[:data].transform_keys(&:to_sym)
       end
@@ -41,8 +60,7 @@ module EventSourcing
         self[:metadata].transform_keys(&:to_sym)
       end
 
-      ###########################################################
-
+      # Delegates to `ActiveRecord#persisted?`
       def already_persisted?
         persisted?
       end
