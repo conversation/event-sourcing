@@ -9,6 +9,8 @@ module Users
 
       belongs_to :user, class_name: "::User", autosave: false
 
+      default_scope { where("metadata->>'klass' = ?", klass_name) }
+
       def dispatch
         EventDispatcher.dispatch(self)
       end

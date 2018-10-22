@@ -3,10 +3,6 @@ module EventSourcing
     module EventRecord
       extend ActiveSupport::Concern
 
-      included do
-        default_scope { where("metadata->>'klass' = ?", klass_name) }
-      end
-
       class_methods do
         def klass_name
           self.base_class.name
