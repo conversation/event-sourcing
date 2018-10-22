@@ -6,10 +6,6 @@ module EventSourcing
       included do
         include ActiveModel::Validations
       end
-
-      def validate!
-        valid? || raise(ActiveRecord::RecordInvalid, self)
-      end
     end
   end
 end
