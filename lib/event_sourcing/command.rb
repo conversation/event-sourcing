@@ -6,20 +6,19 @@
 #   MyCommand.call(user: ..., post: ...) # shorthand to initialize, validate and execute the command
 #   command = MyCommand.new(user: ..., post: ...)
 #   command.valid? # true or false
-#   command.errors # +> <ActiveModel::Errors ... >
 #   command.call # validate and execute the command
 # ```
 #
-# `call` will raise an `ActiveRecord::RecordInvalid` error if it fails validations.
-#
-# Commands including the `Command::Base` mixin must:
+# Commands including the `EventSourcing::Command` mixin must:
 # * list the attributes the command takes
 # * implement `build_event` which returns a non-persisted event or nil for noop.
 #
-# Ex:
+# Example:
 #
 # ```
-#   class MyCommand < EventSourcing::Command
+#   class MyCommand
+#     include EventSourcing::Command
+#
 #     attributes :user, :post
 #
 #     def build_event
@@ -27,6 +26,27 @@
 #     end
 #   end
 # ```
+#
+# Subclasses must define the following methods:
+#
+# - `build_event`
+# - `validate!`
+#
+# You can also implement an optional `after_initialize` method, which can be used to set commands' default values
+# after its initialization. Example:
+#
+# ```
+#   class MyCommand
+#     include EventSourcing::Command
+#
+#     attributes :active
+#
+#     def after_initialize
+#       self.active = true
+#     end
+#   end
+# ```
+#
 module EventSourcing
   module Command
     def self.included(base)
