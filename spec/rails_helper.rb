@@ -3,6 +3,7 @@ require "spec_helper"
 require "active_support"
 require "active_model"
 require "active_record"
+require "event_sourcing/rails"
 
 require "support/migration"
 

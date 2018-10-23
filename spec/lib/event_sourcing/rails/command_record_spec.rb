@@ -1,9 +1,4 @@
-require "spec_helper"
-
-require "active_support"
-require "active_model"
-require "active_record"
-require "event_sourcing/rails"
+require "rails_helper"
 
 class UserCreateCommand
   include EventSourcing::Command

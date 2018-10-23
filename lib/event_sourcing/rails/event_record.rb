@@ -29,7 +29,13 @@ module EventSourcing
       # - `Users::Events::Base#user` -> `Users::Events::Base#aggregate`
       # - `Users::Events::Base#user_id=` -> `Users::Events::Base#aggregate_id=`
       # - `Users::Events::Base#user_id` -> `Users::Events::Base#aggregate_id`
-      # 
+      #
+      def aggregate_name
+        inferred_aggregate = self.class.reflect_on_all_associations(:belongs_to).first
+        raise "Events must belong to an aggregate" if inferred_aggregate.nil?
+        inferred_aggregate.name
+      end
+
       def aggregate=(object)
         public_send("#{aggregate_name}=", object)
       end
@@ -61,22 +67,16 @@ module EventSourcing
         persisted?
       end
 
-      private
-
-      def aggregate_name
-        inferred_aggregate = self.class.reflect_on_all_associations(:belongs_to).first
-        raise "Events must belong to an aggregate" if inferred_aggregate.nil?
-        inferred_aggregate.name
-      end
-
       def persist_aggregate
         aggregate.save!
       end
 
       def persist_event
+        raise "Event must have an aggregate!" if aggregate.nil?
+
         self[:data] = @data
         self[:metadata] = @metadata
-        self.aggregate_id = aggregate.id if aggregate_id.nil?
+        self.aggregate_id = aggregate.id
 
         save!
       end
