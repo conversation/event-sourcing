@@ -1,5 +1,7 @@
 class User < ApplicationRecord
   has_many :events, -> { order(id: :asc) }, class_name: "Users::Events::Base"
 
-  validates :name, :active, :description, presence: true
+  scope :active, -> { where(deleted_at: nil) }
+
+  validates :name, :description, presence: true
 end

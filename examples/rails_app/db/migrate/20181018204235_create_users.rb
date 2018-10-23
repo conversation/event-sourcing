@@ -4,6 +4,7 @@ class CreateUsers < ActiveRecord::Migration[5.2]
       t.string :name
       t.boolean :active
       t.string :description
+      t.datetime :deleted_at, default: nil
 
       t.timestamps
     end
