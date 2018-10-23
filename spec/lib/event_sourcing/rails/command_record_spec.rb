@@ -1,16 +1,7 @@
 require "rails_helper"
 
-class UserCreateCommand
-  include EventSourcing::Command
-  include EventSourcing::Rails::CommandRecord
-
-  attributes :name
-
-  validates :name, length: { minimum: 20 }
-end
-
 RSpec.describe EventSourcing::Rails::CommandRecord do
-  subject(:command) { UserCreateCommand.new(name: given_name) }
+  subject(:command) { RailsUserCreateCommand.new(name: given_name) }
 
   let(:given_name) { "Not long enough" }
 

@@ -6,6 +6,7 @@ require "active_record"
 require "event_sourcing/rails"
 
 require "support/migration"
+require "support/rails/test_models"
 
 MIGRATIONS_PATH = [File.expand_path(File.join("rails", "migrations"), __dir__)].freeze
 

@@ -1,35 +1,5 @@
 require "rails_helper"
 
-class RailsUser < ActiveRecord::Base
-  self.table_name = :users
-end
-
-class RailsUserCreated < ActiveRecord::Base
-  include EventSourcing::Event
-  include EventSourcing::Rails::EventRecord
-
-  self.table_name = :user_events
-
-  belongs_to :user, class_name: "RailsUser"
-
-  data_attributes :name
-
-  def apply(test_user)
-    test_user.name = name
-    test_user
-  end
-
-  private
-
-  def build_aggregate
-    @test_user ||= RailsUser.new
-  end
-
-  def dispatch
-    :dispatch
-  end
-end
-
 RSpec.describe EventSourcing::Rails::EventRecord do
   let(:event) { RailsUserCreated.assign(name: "John Doe") }
   let(:event_class) { RailsUserCreated }

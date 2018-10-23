@@ -1,9 +1,6 @@
 module Users
   module Events
     class Updated < Users::Events::Base
-      include EventSourcing::Event
-      include EventSourcing::Rails::EventRecord
-
       data_attributes :active, :description, :record_id, :name
 
       # @param [User] user

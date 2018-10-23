@@ -1,9 +1,6 @@
 module Users
   module Events
     class Destroyed < Users::Events::Base
-      include EventSourcing::Event
-      include EventSourcing::Rails::EventRecord
-
       data_attributes :record_id
 
       # @param [User] user
