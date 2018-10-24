@@ -1,21 +1,18 @@
-require "event_sourcing/reactor_job"
 require "set"
 
 module EventSourcing
   # Dispatcher implementation.
   class EventDispatcher
-    # Register Reactors to Events.
-    # * Reactors registered with `trigger` will be triggered synchronously
-    # * Reactors registered with `async` will be triggered asynchronously via any Background processor
+    # Register Reactors to Events, which will be synchronously triggered
     #
     # Example:
     #
-    #   on BaseEvent, trigger: LogEvent, async: TrackEvent
-    #   on PledgeCancelled, PaymentFailed, async: [NotifyAdmin, CreateTask]
-    #   on [PledgeCancelled, PaymentFailed], async: [NotifyAdmin, CreateTask]
+    #   on BaseEvent, trigger: LogEvent
+    #   on PledgeCancelled, PaymentFailed, trigger: [NotifyAdmin, CreateTask]
+    #   on [PledgeCancelled, PaymentFailed], trigger: [NotifyAdmin, CreateTask]
     #
-    def self.on(*events, trigger: [], async: [])
-      rules.register(events: events.flatten, sync: Array(trigger), async: Array(async))
+    def self.on(*events, trigger: [])
+      rules.register(events: events.flatten, sync: Array(trigger))
     end
 
     # Dispatches events to matching Reactors once.
@@ -23,7 +20,6 @@ module EventSourcing
     def self.dispatch(event)
       reactors = rules.for(event)
       reactors.sync.each { |reactor| reactor.call(event) }
-      reactors.async.each { |reactor| ReactorJob.perform_later(event, reactor.to_s) }
     end
 
     def self.rules
@@ -35,11 +31,10 @@ module EventSourcing
         @rules ||= Hash.new { |h, k| h[k] = ReactorSet.new }
       end
 
-      # Register events with their sync and async Reactors
-      def register(events:, sync:, async:)
+      # Register events with their sync Reactors
+      def register(events:, sync:)
         events.each do |event|
           @rules[event].add_sync sync
-          @rules[event].add_async async
         end
       end
 
@@ -51,7 +46,6 @@ module EventSourcing
           # Match event by class including ancestors. e.g. All events match a role for BaseEvent.
           if event.is_a?(event_class)
             reactors.add_sync rule.sync
-            reactors.add_async rule.async
           end
         end
 
@@ -59,23 +53,18 @@ module EventSourcing
       end
     end
 
-    # Contains sync and async reactors. Used to:
+    # Contains sync reactors. Used to:
     # * store reactors via Rules#register
     # * return a set of matching reactors with Rules#for
     class ReactorSet
-      attr_reader :sync, :async
+      attr_reader :sync
 
       def initialize
         @sync = Set.new
-        @async = Set.new
       end
 
       def add_sync(reactors)
         @sync += reactors
-      end
-
-      def add_async(reactors)
-        @async += reactors
       end
     end
   end
