@@ -6,12 +6,6 @@ class PoroApp
       class Base < PoroApp::Events::Base
         private
 
-        def persist
-          puts "-------PERSISTENCE--------"
-          puts self.aggregate.inspect
-          puts "--------------------------"
-        end
-
         def build_aggregate
           self.aggregate ||= PoroApp::User.new
         end

@@ -11,37 +11,53 @@
 # - `persisted?`
 #
 module EventSourcing
-  class Event
-    attr_reader :data, :metadata
-    attr_accessor :aggregate
+  module Event
+    def self.included(base)
+      base.extend ClassMethods
+    end
 
-    # Define attributes to be serialized in the `data` column.
-    # It generates setters and getters for those.
-    #
-    # Example:
-    #
-    # class MyEvent < Lib::BaseEvent
-    #   data_attributes :title, :description, :drop_id
-    # end
-    #
-    # MyEvent.create!(
-    def self.data_attributes(*attrs)
-      attrs.map(&:to_s).each do |attr|
-        define_method attr do
-          @data[attr.to_sym]
-        end
+    module ClassMethods
+      # @param [Hash] attrs
+      def assign(attrs = {})
+        metadata = attrs[:metadata] || {}
 
-        define_method "#{attr}=" do |arg|
-          @data[attr.to_sym] = arg
+        self.new.tap do |instance|
+          instance.instance_variable_set(:@data, attrs)
+          instance.instance_variable_set(:@metadata, metadata.merge(klass: klass_name))
         end
+      end
+
+      # Define attributes to be serialized in the `data` column.
+      # It generates setters and getters for those.
+      #
+      # Example:
+      #
+      # class MyEvent < Lib::BaseEvent
+      #   data_attributes :title, :description, :drop_id
+      # end
+      #
+      # MyEvent.create!(
+      def data_attributes(*attrs)
+        attrs.map(&:to_s).each do |attr|
+          define_method attr do
+            @data ||= {}
+            @data[attr.to_sym]
+          end
+
+          define_method "#{attr}=" do |arg|
+            @data ||= {}
+            @data[attr.to_sym] = arg
+          end
+        end
+      end
+
+      def klass_name
+        self.name
       end
     end
 
-    # @param [Hash] attrs
-    def initialize(attrs = {})
-      @data = attrs
-      @metadata = { klass: self.class.name }
-    end
+    attr_reader :data, :metadata
+    attr_accessor :aggregate
 
     # Apply the event to the aggregate passed in.
     # Must return the aggregate.
@@ -49,8 +65,9 @@ module EventSourcing
       raise NotImplementedError
     end
 
+    # Redundant name to avoid clashing with ActiveRecord's `#persisted?` method
     # @return [TrueClass, FalseClass]
-    def persisted?
+    def already_persisted?
       false
     end
 
@@ -58,16 +75,18 @@ module EventSourcing
     # @param [Object] aggregate
     def replay(aggregate)
       event_class = Object.const_get(metadata[:klass])
-      event_class.new(data).apply(aggregate)
+      event_class.assign(data).apply(aggregate)
     end
 
-    # Persists and dispatches the event
-    def save
-      build_aggregate
+    def persist_and_dispatch
+      self.aggregate = build_aggregate
 
-      # Apply and persist
+      # Apply
       self.aggregate = apply(aggregate)
-      persist
+
+      # Persist aggregate
+      persist_aggregate
+      persist_event
 
       dispatch
     end
@@ -85,8 +104,13 @@ module EventSourcing
       raise NotImplementedError
     end
 
+    # Persists the aggregate. Must be implemented.
+    def persist_aggregate
+      raise NotImplementedError
+    end
+
     # Persists the transformation event. Must be implemented.
-    def persist
+    def persist_event
       raise NotImplementedError
     end
   end
