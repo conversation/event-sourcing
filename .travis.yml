@@ -1,7 +1,10 @@
 ---
-sudo: false
+addons:
+  postgresql: 9.6
+before_install: gem install bundler -v 1.17.0
+before_script: createdb -U postgres event_sourcing_test
 language: ruby
-cache: bundler
 rvm:
-  - 2.5.1
-before_install: gem install bundler -v 1.16.6
+- 2.4.5
+- 2.5.3
+script: bundle exec rake spec
