@@ -1,5 +1,7 @@
 # Event Sourcing PORO app
 
+*Note: PORO stands for Plain Old Ruby Object.*
+
 This example implements a small portion of a system that handles its users as event sourced data.
 
 To execute a sample run of it, you can run its binary execution file: `./examples/poro_app/bin/execute`.
