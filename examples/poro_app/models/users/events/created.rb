@@ -1,7 +1,7 @@
 class PoroApp
   module Users
     module Events
-      class Created < Base
+      class Created < PoroApp::Events::Base
         data_attributes :active, :description, :name, :visible
 
         # @param [PoroApp::User] user
@@ -13,6 +13,10 @@ class PoroApp
           user.visible = visible
 
           user
+        end
+
+        def build_aggregate
+          self.aggregate ||= PoroApp::User.new
         end
       end
     end

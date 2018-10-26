@@ -4,11 +4,37 @@
 # After create, it calls `apply` to apply changes.
 #
 # Subclasses must define the following methods:
+#
+# - `already_persisted?`
 # - `apply`
 # - `build_aggregate`
 # - `dispatch`
-# - `persist`
-# - `persisted?`
+# - `persist_aggregate`
+# - `persist_event`
+#
+# Example:
+#
+# ```
+# class MyEvent
+#   include EventSourcing::Event
+#
+#   def persist_aggregate
+#     # Define your aggregate persistence method here
+#   end
+#
+#   def persist_event
+#     # Define your event persistence method here
+#   end
+#
+#   def dispatch
+#     # Define your custom dispatcher here
+#   end
+#
+#   def build_aggregate
+#     self.aggregate ||= MyAggregate.new
+#   end
+# end
+# ```
 #
 module EventSourcing
   module Event
