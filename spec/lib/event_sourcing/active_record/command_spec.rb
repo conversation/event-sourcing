@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe EventSourcing::Rails::CommandRecord do
+RSpec.describe EventSourcing::ActiveRecord::Command do
   subject(:command) { RailsUserCreateCommand.new(name: given_name) }
 
   let(:given_name) { "Not long enough" }

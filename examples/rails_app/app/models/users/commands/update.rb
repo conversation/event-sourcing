@@ -2,7 +2,7 @@ module Users
   module Commands
     class Update
       include EventSourcing::Command
-      include EventSourcing::Rails::CommandRecord
+      include EventSourcing::ActiveRecord::Command
 
       attributes :active, :description, :record_id, :name
 

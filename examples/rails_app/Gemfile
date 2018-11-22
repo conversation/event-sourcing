@@ -40,4 +40,4 @@ end
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
-gem "event-sourcing", path: "../../../event-sourcing", require: "event_sourcing/rails"
+gem "event-sourcing", path: "../../../event-sourcing", require: "event_sourcing/active_record"

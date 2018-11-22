@@ -15,7 +15,7 @@ Rails is a strong opinionated framework, so there are a couple of points to keep
 ```ruby
 class BaseEvent < ApplicationRecord
   include EventSourcing::Event
-  include EventSourcing::Rails::EventRecord
+  include EventSourcing::ActiveRecord::Event
 
   self.abstract_class = true
 end
@@ -34,7 +34,7 @@ class MyEvent < BaseEvent
     aggregate.name = name
     aggregate
   end
-  
+
   def build_aggregate
     @aggregate ||= MyModel.find(record_id)
   end
@@ -45,11 +45,11 @@ end
 - Events must have a `belongs_to` relationship
     - Motive: this one-to-many association represents the events-aggregator relationship
     - Example:
-    
+
 ```ruby
 class BaseEvent < ApplicationRecord
   include EventSourcing::Event
-  include EventSourcing::Rails::EventRecord
+  include EventSourcing::ActiveRecord::Event
 
   belongs_to :user
 end
@@ -95,7 +95,7 @@ end
 
 ## Reactors
 
-Reactors are 
+Reactors are
 
 - [Log User Change Reactor](app/models/users/reactors/log_user_change.rb)
 - [Send Getting Started Email Reactor](app/models/users/reactors/send_getting_started_email.rb)

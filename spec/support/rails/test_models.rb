@@ -6,7 +6,7 @@ end
 
 class RailsUserEvent < ActiveRecord::Base
   include EventSourcing::Event
-  include EventSourcing::Rails::EventRecord
+  include EventSourcing::ActiveRecord::Event
 
   self.table_name = :user_events
   self.abstract_class = true
@@ -54,7 +54,7 @@ end
 
 class RailsUserCreateCommand
   include EventSourcing::Command
-  include EventSourcing::Rails::CommandRecord
+  include EventSourcing::ActiveRecord::Command
 
   attributes :name
 
@@ -69,7 +69,7 @@ end
 
 class RailsUserUpdateCommand
   include EventSourcing::Command
-  include EventSourcing::Rails::CommandRecord
+  include EventSourcing::ActiveRecord::Command
 
   attributes :name, :record_id
 

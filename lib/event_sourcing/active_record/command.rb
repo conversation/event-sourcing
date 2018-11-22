@@ -1,6 +1,6 @@
 module EventSourcing
-  module Rails
-    module CommandRecord
+  module ActiveRecord
+    module Command
       extend ActiveSupport::Concern
 
       included do

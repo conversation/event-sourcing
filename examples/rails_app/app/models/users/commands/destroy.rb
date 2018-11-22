@@ -2,7 +2,7 @@ module Users
   module Commands
     class Destroy
       include EventSourcing::Command
-      include EventSourcing::Rails::CommandRecord
+      include EventSourcing::ActiveRecord::Command
 
       attributes :record_id
 
