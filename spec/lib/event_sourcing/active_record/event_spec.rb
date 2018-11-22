@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe EventSourcing::Rails::EventRecord do
+RSpec.describe EventSourcing::ActiveRecord::Event do
   let(:event) { RailsUserCreated.assign(name: "John Doe") }
   let(:event_class) { RailsUserCreated }
 

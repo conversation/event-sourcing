@@ -1,15 +1,15 @@
 # EventSourcing
 
-Simple Ruby Event Sourcing framework, with Rails support. Inspired by [Kickstarter](https://www.kickstarter.com/)'s 
+Simple Ruby Event Sourcing framework, with Rails support. Inspired by [Kickstarter](https://www.kickstarter.com/)'s
 ["Event Sourcing made Simple"](https://kickstarter.engineering/event-sourcing-made-simple-4a2625113224) blog post.
 
-`EventSourcing` gives you a toolset to configure and store sequences of events on any Ruby application, making it 
+`EventSourcing` gives you a toolset to configure and store sequences of events on any Ruby application, making it
 possible to query an object state at any given point of time.
 
-As Martin Fowler describes the Event Sourcing concept:  
+As Martin Fowler describes the Event Sourcing concept:
 
-> Event Sourcing ensures that all changes to application state are stored as a sequence of events. Not just can we query 
-these events, we can also use the event log to reconstruct past states, and as a foundation to automatically adjust the 
+> Event Sourcing ensures that all changes to application state are stored as a sequence of events. Not just can we query
+these events, we can also use the event log to reconstruct past states, and as a foundation to automatically adjust the
 state to cope with retroactive changes.
 > - Source: https://martinfowler.com/eaaDev/EventSourcing.html
 
@@ -28,7 +28,7 @@ And then execute:
 Or install it yourself as:
 
     $ gem install event-sourcing
-    
+
 ## Concepts
 
 This frameworks introduces artifacts and rules to keep track of object state changes.
@@ -54,11 +54,11 @@ While state changing actions obey the rationale:
 This framework can be used on any Ruby project, as it allows you to customize how you can handle Event persistence and
 event dispatching control flow.
 
-You can find an implementation sample at the [PORO app's README file](examples/poro_app/README.md).  
+You can find an implementation sample at the [PORO app's README file](examples/poro_app/README.md).
 
 ## Usage with Rails
 
-You can also use this framework with Rails, as it includes an `event_sourcing/rails` module to ease up configuration.
+You can also use this framework with Rails, as it includes an `event_sourcing/active_record` module to ease up configuration.
 
 **Note:** this Rails implementation requires a database that implements serializable attributes by default,
 such as PostgreSQL JSON/Binary JSON columns.
@@ -66,7 +66,7 @@ such as PostgreSQL JSON/Binary JSON columns.
 To include the Rails module, add this line to your application's Gemfile:
 
 ```ruby
-gem "event-sourcing", require: "event_sourcing/rails"
+gem "event-sourcing", require: "event_sourcing/active_record"
 ```
 
 Further installation steps and a sample implementation can be found at the [Rails' README file](examples/rails_app/README.md).
@@ -77,7 +77,7 @@ Further installation steps and a sample implementation can be found at the [Rail
     - Postgres 8.4+
     - Ruby 2.3+
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. 
+After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests.
 
 You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
@@ -99,4 +99,4 @@ expected to follow the [code of conduct](https://github.com/conversation/event-s
 ## Related Projects
 
 Thank you very much [Kickstarter](https://www.kickstarter.com/) for making the ["Event Sourcing made Simple"](https://kickstarter.engineering/event-sourcing-made-simple-4a2625113224)
-blog post. This project is heavily inspired on concepts described on it and its [Rails demo app](https://github.com/pcreux/event-sourcing-rails-todo-app-demo). 
+blog post. This project is heavily inspired on concepts described on it and its [Rails demo app](https://github.com/pcreux/event-sourcing-rails-todo-app-demo).

@@ -2,7 +2,7 @@ module Users
   module Commands
     class Create
       include EventSourcing::Command
-      include EventSourcing::Rails::CommandRecord
+      include EventSourcing::ActiveRecord::Command
 
       attributes :description, :name
 

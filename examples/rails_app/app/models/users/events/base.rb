@@ -2,7 +2,7 @@ module Users
   module Events
     class Base < ApplicationRecord
       include EventSourcing::Event
-      include EventSourcing::Rails::EventRecord
+      include EventSourcing::ActiveRecord::Event
 
       self.table_name = :user_events
       self.abstract_class = true

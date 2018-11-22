@@ -1,6 +1,6 @@
 module EventSourcing
-  module Rails
-    module EventRecord
+  module ActiveRecord
+    module Event
       extend ActiveSupport::Concern
 
       class_methods do
