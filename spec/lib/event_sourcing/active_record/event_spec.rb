@@ -126,5 +126,23 @@ RSpec.describe EventSourcing::ActiveRecord::Event do
         end
       end
     end
+
+    describe "#persistence_wrapper" do
+      let(:user) { RailsUser.create(name: "John Doe") }
+      let(:event) { RailsUserUpdated.assign(name: "My Awesome New Name", record_id: user.id) }
+
+      context "transaction raises an exception" do
+        before { allow(event).to receive(:persist_event).and_raise(NoMethodError) }
+
+        it "rollbacks event calculation and persistence" do
+          expect { event.persist_and_dispatch }.to raise_error(NoMethodError)
+
+          user.reload
+
+          expect(user.events.count).to eq(0)
+          expect(user.name).to eq("John Doe")
+        end
+      end
+    end
   end
 end

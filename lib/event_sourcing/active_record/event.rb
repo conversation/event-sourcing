@@ -80,6 +80,14 @@ module EventSourcing
 
         save!
       end
+
+      # Creates a "nested transaction", forcing a SAVEPOINT in case the event persistence is
+      # called inside an `ActiveRecord#transaction` block
+      def persistence_wrapper
+        ::ActiveRecord::Base.transaction(requires_new: true) do
+          yield
+        end
+      end
     end
   end
 end
