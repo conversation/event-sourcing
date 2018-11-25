@@ -1,7 +1,7 @@
 class RailsUser < ActiveRecord::Base
   self.table_name = :users
 
-  has_many :events, class_name: "RailsUserEvent"
+  has_many :events, class_name: "RailsUserEvent", foreign_key: "user_id"
 end
 
 class RailsUserEvent < ActiveRecord::Base

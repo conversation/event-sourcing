@@ -101,4 +101,15 @@ RSpec.describe EventSourcing::Event do
       expect(event).to have_received(:dispatch)
     end
   end
+
+  describe "#persistence_wrapper" do
+    let(:event) { UpdatedEvent.assign(name: "Aunt May") }
+    let(:wrapped_double) { double("Wrapped Double", called: true) }
+
+    it "yields the given block" do
+      event.persistence_wrapper { wrapped_double.called }
+
+      expect(wrapped_double).to have_received(:called)
+    end
+  end
 end

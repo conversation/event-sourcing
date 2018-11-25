@@ -105,16 +105,24 @@ module EventSourcing
     end
 
     def persist_and_dispatch
-      self.aggregate = build_aggregate
+      persistence_wrapper do
+        self.aggregate = build_aggregate
 
-      # Apply
-      self.aggregate = apply(aggregate)
+        # Apply
+        self.aggregate = apply(aggregate)
 
-      # Persist aggregate
-      persist_aggregate
-      persist_event
+        # Persist aggregate
+        persist_aggregate
+        persist_event
 
-      dispatch
+        dispatch
+      end
+    end
+
+    # Customizable persistence wrapper for the event persistence and dispatch method
+    # Allows to wrap aggregate and event persistence into a transaction
+    def persistence_wrapper
+      yield
     end
 
     private
