@@ -144,5 +144,23 @@ RSpec.describe EventSourcing::ActiveRecord::Event do
         end
       end
     end
+
+    describe "#reify" do
+      let(:user) { RailsUser.create(name: "John Doe") }
+
+      before do
+        RailsUserUpdateCommand.call(record_id: user.id, name: "My Super Foo Bar Name")
+      end
+
+      it "materializes the aggregate event record from its serialized form" do
+        event = user.events.last.reify
+
+        expect(event).to be_an_instance_of(RailsUserUpdated)
+        expect(event).to have_attributes(
+          data: { name: "My Super Foo Bar Name", record_id: user.id },
+          metadata: { klass: "RailsUserUpdated" }
+        )
+      end
+    end
   end
 end

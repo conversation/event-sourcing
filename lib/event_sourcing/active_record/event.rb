@@ -87,6 +87,13 @@ module EventSourcing
         ::ActiveRecord::Base.transaction(requires_new: true) do
           yield
         end
+
+      # @return [Class] Given class from metadata[:klass]
+      # Materializes the event class from the database
+      def reify
+        event_class = Object.const_get(metadata[:klass])
+        event_class.find(self[:id])
+      end
       end
     end
   end

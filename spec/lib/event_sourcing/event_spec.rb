@@ -7,7 +7,6 @@ end
 
 class CreatedEvent
   include EventSourcing::Event
-
 end
 
 class UpdatedEvent
