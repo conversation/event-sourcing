@@ -3,8 +3,9 @@ addons:
   postgresql: 9.6
 before_install: gem install bundler -v 1.17.0
 before_script: createdb -U postgres event_sourcing_test
+cache: bundler
 language: ruby
 rvm:
 - 2.4.5
 - 2.5.3
-script: bundle exec rake spec
+script: make test
