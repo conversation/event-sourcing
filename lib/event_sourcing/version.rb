@@ -1,3 +1,3 @@
 module EventSourcing
-  VERSION = "0.3.1.pre"
+  VERSION = "0.4.1.pre"
 end
