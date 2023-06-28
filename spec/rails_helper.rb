@@ -16,10 +16,6 @@ RSpec.configure do |config|
     ActiveRecord::Base.connection.execute("DROP TABLE IF EXISTS schema_migrations")
     ActiveRecord::Base.connection.execute("DROP TABLE IF EXISTS user_events")
     ActiveRecord::Base.connection.execute("DROP TABLE IF EXISTS users")
-    if ActiveRecord.version.release < Gem::Version.new("5.2.0")
-      ActiveRecord::Migrator.migrate(MIGRATIONS_PATH)
-    else
-      ActiveRecord::MigrationContext.new(MIGRATIONS_PATH).migrate
-    end
+    ActiveRecord::MigrationContext.new(MIGRATIONS_PATH).migrate
   end
 end
