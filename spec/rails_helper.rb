@@ -12,14 +12,18 @@ MIGRATIONS_PATH = [File.expand_path(File.join("rails", "migrations"), __dir__)].
 
 RSpec.configure do |config|
   config.before(:suite) do
-    ActiveRecord::Base.establish_connection(adapter: "postgresql", database: "event_sourcing_test")
+    ActiveRecord::Base.establish_connection(
+      host: ENV["POSTGRES_HOST"] || "localhost",
+      port: ENV["POSTGRES_PORT"] || 5432,
+      username: ENV["POSTGRES_USER"],
+      password: ENV["POSTGRES_PASSWORD"],
+      adapter: "postgresql",
+      database: "event_sourcing_test"
+    )
+
     ActiveRecord::Base.connection.execute("DROP TABLE IF EXISTS schema_migrations")
     ActiveRecord::Base.connection.execute("DROP TABLE IF EXISTS user_events")
     ActiveRecord::Base.connection.execute("DROP TABLE IF EXISTS users")
-    if ActiveRecord.version.release < Gem::Version.new("5.2.0")
-      ActiveRecord::Migrator.migrate(MIGRATIONS_PATH)
-    else
-      ActiveRecord::MigrationContext.new(MIGRATIONS_PATH).migrate
-    end
+    ActiveRecord::MigrationContext.new(MIGRATIONS_PATH).migrate
   end
 end

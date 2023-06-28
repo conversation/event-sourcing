@@ -16,9 +16,9 @@ Gem::Specification.new do |spec|
   spec.files = `git ls-files -- lib/*`.split("\n")
   spec.require_paths = ["lib"]
 
-  spec.add_development_dependency "bundler", "~> 1.16"
+  spec.add_development_dependency "bundler", "~> 2.2"
   spec.add_development_dependency "pg", "~> 1.0"
-  spec.add_development_dependency "rails", "~> 5.0", "< 6"
-  spec.add_development_dependency "rake", "~> 10.0"
+  spec.add_development_dependency "rails", "~> 7"
+  spec.add_development_dependency "rake", "~> 12"
   spec.add_development_dependency "rspec", "~> 3.0"
 end
